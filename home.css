@@ -1,0 +1,83 @@
+/* General styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+
+/* Menu button styles */
+#menuButton {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#menuButton :hover{
+    background: tan;
+}
+#menuButton img {
+    width: 30px;
+    height: 30px;
+}
+
+/* Search bar container */
+#searchBar {
+    width: 80%;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    background-color: #fff;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    top: 20px;
+    position:absolute;
+}
+
+/* Input field styles */
+#searchInput {
+    width:100%;
+    flex: 1;
+    padding: 10px;
+    border-radius: 25px 0 0 25px;
+    outline: none;
+    border: none;
+    font-size: 16px;
+}
+
+/* Button styles */
+button {
+    border: none;
+    background-color: #ccc;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    height: 40px;
+}
+
+button img {
+    width: 20px;
+    height: 20px;
+}
+
+/* Clear button styles */
+button[type="button"] {
+    border-radius: 0;
+    background-color: transparent;
+}
+
+/* Search button styles */
+button[type="submit"] {
+    background-color: #3498db;
+    border-radius: 0 25px 25px 0;
+    border: solid 1px;
+}

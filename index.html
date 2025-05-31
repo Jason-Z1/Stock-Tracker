@@ -3,9 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="home.css">
+    <script src="home.js"></script>
     <title>Stocker</title>
 </head>
 <body>
-    
+    <button id="menuButton">
+        <img src="./resources/images/three_hamburgers.png" alt="Menu" style="width:30px; height:30px;">
+    </button>
+    <!--Search Bar-->
+        <form action="/search" method="GET" id="searchBar">
+            <input id="searchInput" type="text" name="query" placeholder="Search stocks..." required>
+            <button type="button" onclick="clearInput()">
+                <img src="./resources/images/X.png" style="width:10px; height:10px;">
+            </button>
+            <button type="submit">
+                <img src="./resources/images/search_icon.png" alt="Search" style="width:10px; height:10px;">
+            </button>
+        </form>
 </body>
 </html>
