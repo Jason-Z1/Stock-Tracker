@@ -5,8 +5,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
     background-color: #f4f4f4;
 }
 
@@ -80,4 +79,22 @@ button[type="submit"] {
     background-color: #3498db;
     border-radius: 0 25px 25px 0;
     border: solid 1px;
+}
+
+#movers-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+#movers-container div{
+    background: #222;
+    color:white;
+    padding:10px;
+    border-radius: 8px;
+    width: 150px;
+}
+
+#moversChart {
+    border: 2px dashed red;
 }
