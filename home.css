@@ -4,9 +4,9 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    align-items: center;
     min-height: 100vh;
     background-color: #f4f4f4;
+    align-items: center;
 }
 
 /* Menu button styles */
@@ -81,20 +81,32 @@ button[type="submit"] {
     border: solid 1px;
 }
 
+/* Changes the entire container that holds the 5 cards */ 
 #movers-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 10px;
+    justify-content: flex-start;
+    margin-top: 20px;
+    
 }
-
+/* Changes the individual cards */
 #movers-container div{
-    background: #222;
+    background: #3498db;
     color:white;
     padding:10px;
     border-radius: 8px;
     width: 150px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#movers-container div:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
 }
 
 #moversChart {
-    border: 2px dashed red;
+    border: 2px solid black;
 }
