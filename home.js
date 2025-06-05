@@ -2,79 +2,66 @@ const API_KEY = "d0tti2pr01qlvahea590d0tti2pr01qlvahea59g";
 const topTickers = ["AAPL", "TSLA", "NVDA", "MSFT", "AMZN"];
 
 async function getTopMovers() {
-    /*
-    const mostUp = await fetch(`https://finnhub.io/api/v1/scan/up?token=${API_KEY}`);
-    const upData = await mostUp.json();
+    const moversContainer = document.getElementById("movers-container");
     
-    console.log("API Raw Response:", upData);
-    console.log("Keys:", Object.keys(upData));
-
-    if (!upData.stocks || upData.stocks.length === 0) {
-        console.error("No data returned or API limit exceeded.");
-        return;
-    }
-
-    const moversContainer = document.getElementById("movers-container");
-
-    upData.stocks.slice(0, 5).forEach(stock => {
-        const card = document.createElement("div");
-        //Retrieves the data from the json file that the API sends
-        card.innerHTML = `
-            <h3>${stock.s}</h3>
-            <p>Price: $${stock.p}</p>
-            <p>Change: ${stock.dp.toFixed(2)}%</p>
-        `;
-        moversContainer.appendChild(card);
-    });
-
-
-    const labels = upData.stocks.slice(0, 5).map(stock => stock.s);
-    const percentChanges = upData.stocks.slice(0, 5).map(stock => stock.dp);
-    */
-    const moversContainer = document.getElementById("movers-container");
-    const labels = [];
-    const percentChanges = [];
-
+    //Creates the cards for each company
     for(const symbol of topTickers){
-        const result = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`);
-        const data = await result.json();
+        const cardRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`);
+        const candleRes = await fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&count=5&token=${API_KEY}`);
+        const cardData = await cardRes.json();
+        const candleData = await candleRes.json();
 
-        labels.push(symbol);
-        percentChanges.push(data.dp);
-
+        //Creates the card variable
         const card = document.createElement("div");
         card.innerHTML = `
             <h3>${symbol}</h3>
-            <p>Price: $${data.c}</p>
-            <p>Change: ${data.dp.toFixed(2)}%</p>
+            <p>Price: $${cardData.c}</p>
+            <p>Change: ${cardData.dp.toFixed(2)}%</p>
+            <canvas id="chart-${symbol}" width="140" height="100></canvas>
         `;
         moversContainer.appendChild(card);
-    }
 
-    const ctx = document.getElementById("moversChart").getContext("2d");
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Top Gainers % Change',
-                data: percentChanges,
-                backgroundColor: 'rgba(52, 152, 219, 0.6)'
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
+        //Running the candle data
+        const formatted = candleData.t.map((timestamp, i) => ({
+            x: new Date(timestamp * 1000),
+            o: candleData.o[i],
+            h: candleData.h[i],
+            l: candleData.l[i],
+            c: candleData.c[i],
+        }));
+
+        const ctx = document.getElementById(`chart-${symbol}`).getContext("2d");
+        new Chart(ctx, {
+            type: 'candlestick',
+            data: {
+                datasets: [{
+                    label: `${symbol} - Last 5 Days`,
+                    data: formatted,
+                    backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                    borderColor: '#fff',
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
                 },
-                title: {
-                    display: true,
-                    text: 'Top Stocks Today'
+                scales: {
+                    x: {
+                        ticks: {autoSkip: true, maxTicksLimit: 5},
+                        time: {unit: 'day'},
+                        type: 'time'
+                    },
+                    y: {
+                        beginAtZero: false
+                    }
                 }
             }
-        }
-    });
+        });
+    }
+
 }
 document.addEventListener("DOMContentLoaded", function() {
     getTopMovers();
