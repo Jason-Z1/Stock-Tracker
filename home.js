@@ -1,4 +1,4 @@
-const API_KEY = "d0tti2pr01qlvahea590d0tti2pr01qlvahea59g";
+const API_KEY = "cf41a2fa846c4f0f9d545030f19eca35";
 const topTickers = ["AAPL", "TSLA", "NVDA", "MSFT", "AMZN"];
 
 async function getTopMovers() {
@@ -10,7 +10,7 @@ async function getTopMovers() {
 
         const now = Math.floor(Date.now() / 1000);
         const fiveDaysAgo = now - 60 * 60 * 24 * 7; // buffer for weekends
-        const candleRes = await fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${fiveDaysAgo}&to=${now}&token=${API_KEY}`);
+        const candleRes = await fetch(`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&outputsize=5&apikey=${API_KEY}`);
 
         const cardData = await cardRes.json();
         const candleData = await candleRes.json();
@@ -23,25 +23,19 @@ async function getTopMovers() {
             <p>Change: ${cardData.dp.toFixed(2)}%</p>
         `;
         
-
-
         card.addEventListener('click', async () => {
-            const now = Math.floor(Date.now() / 1000);
-            const fiveDaysAgo = now - 60 * 60 * 24 * 7;
-            const candleRes = await fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${fiveDaysAgo}&to=${now}&token=${API_KEY}`);
-            const candleData = await candleRes.json();
 
-            if (candleData.s != 'ok') {
+            if (!candleData.values) {
                 alert("No candlestick data available.");
                 return;
             }
 
-            const formatted = candleData.t.map((timestamp, i) => ({
-                x: new Date(timestamp * 1000),
-                o: candleData.o[i],
-                h: candleData.h[i],
-                l: candleData.l[i],
-                c: candleData.c[i],
+            const formatted = candleData.values.reverse().map(day => ({
+                x: new Date(day.datetime),
+                o: parseFloat(day.open),
+                h: parseFloat(day.high),
+                l: parseFloat(day.low),
+                c: parseFloat(day.close)
             }));
 
             if (window.currentChart) {
@@ -74,47 +68,6 @@ async function getTopMovers() {
         });
 
         moversContainer.appendChild(card);
-        /*
-        //Running the candle data
-        const formatted = candleData.t.map((timestamp, i) => ({
-            x: new Date(timestamp * 1000),
-            o: candleData.o[i],
-            h: candleData.h[i],
-            l: candleData.l[i],
-            c: candleData.c[i],
-        }));
-
-        const ctx = document.getElementById(`chart-${symbol}`).getContext("2d");
-        new Chart(ctx, {
-            type: 'candlestick',
-            data: {
-                datasets: [{
-                    label: `${symbol} - Last 5 Days`,
-                    data: formatted,
-                    backgroundColor: 'rgba(52, 152, 219, 0.6)',
-                    borderColor: '#fff',
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: { autoSkip: true, maxTicksLimit: 5 },
-                        time: { unit: 'day' },
-                        type: 'time'
-                    },
-                    y: {
-                        beginAtZero: false
-                    }
-                }
-            }
-        });
-        */
     }
 }
 document.addEventListener("DOMContentLoaded", function () {
