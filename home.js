@@ -1,4 +1,4 @@
-const API_KEY = "cf41a2fa846c4f0f9d545030f19eca35";
+const API_KEY = "d0tti2pr01qlvahea590d0tti2pr01qlvahea59g";
 const topTickers = ["AAPL", "TSLA", "NVDA", "MSFT", "AMZN"];
 
 async function getTopMovers() {
