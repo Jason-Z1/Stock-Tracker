@@ -9,33 +9,36 @@ async function getTopMovers() {
         const cardRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`);
 
         const now = Math.floor(Date.now() / 1000);
-        const fiveDaysAgo = now - 60 * 60 * 24 * 7; // buffer for weekends
-        const candleRes = await fetch(`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&outputsize=5&apikey=${API_KEY}`);
+        const fiveDaysAgo = now - 60 * 60 * 24 * 31; // 14 days timestamp
+        const candleRes = await fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${fiveDaysAgo}&to=${now}&token=${API_KEY}`);
 
         const cardData = await cardRes.json();
         const candleData = await candleRes.json();
 
+        //Logging data (debug)
+        console.log("Candle API response:", candleData);
+        
         //Creates the card variable
         const card = document.createElement("div");
         card.innerHTML = `
-            <h3>${symbol}</h3>
-            <p>Price: $${cardData.c}</p>
-            <p>Change: ${cardData.dp.toFixed(2)}%</p>
+        <h3>${symbol}</h3>
+        <p>Price: $${cardData.c}</p>
+        <p>Change: ${cardData.dp.toFixed(2)}%</p>
         `;
         
         card.addEventListener('click', async () => {
-
-            if (!candleData.values) {
+            
+            if(!candleData || candleData.s !== "ok" || !candleData.t || candleData.t.length === 0){
                 alert("No candlestick data available.");
                 return;
             }
 
-            const formatted = candleData.values.reverse().map(day => ({
-                x: new Date(day.datetime),
-                o: parseFloat(day.open),
-                h: parseFloat(day.high),
-                l: parseFloat(day.low),
-                c: parseFloat(day.close)
+            const formatted = candleData.t.map((timestamp, i) => ({
+                x: new Date(timestamp * 1000),
+                o: candleData.o[i],
+                h: candleData.h[i],
+                l: candleData.l[i],
+                c: candleData.c[i]
             }));
 
             if (window.currentChart) {
@@ -43,12 +46,12 @@ async function getTopMovers() {
             }
 
             const ctx = document.getElementById("candlestickChart").getContext("2d");
-            window.currentChart = new CharacterData(ctx, {
+            window.currentChart = new Chart(ctx, {
                 type: 'candlestick',
                 data: {
                     datasets: [{
                         label: `${symbol} - Last 5 Days`,
-                        data: foramtted
+                        data: formatted
                     }]
                 },
                 options: {
