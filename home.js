@@ -17,7 +17,7 @@ async function getTopMovers() {
 
         //Logging data (debug)
         console.log("Candle API response:", candleData);
-        
+
         //Creates the card variable
         const card = document.createElement("div");
         card.innerHTML = `
@@ -25,10 +25,10 @@ async function getTopMovers() {
         <p>Price: $${cardData.c}</p>
         <p>Change: ${cardData.dp.toFixed(2)}%</p>
         `;
-        
+
         card.addEventListener('click', async () => {
-            
-            if(!candleData || candleData.s !== "ok" || !candleData.t || candleData.t.length === 0){
+
+            if (!candleData || candleData.s !== "ok" || !candleData.t || candleData.t.length === 0) {
                 alert("No candlestick data available.");
                 return;
             }
@@ -73,8 +73,32 @@ async function getTopMovers() {
         moversContainer.appendChild(card);
     }
 }
+
+async function getNews() {
+    const newsContainer = document.getElementById("general-news");
+    const res = await fetch(`https://finnhub.io/api/v1/news?category=general&token=${API_KEY}`);
+    const newsData = await res.json();
+    newsData.slice(0, 15).forEach(article => {
+        const newsItem = document.createElement("div");
+        newsItem.style.marginBottom = "10px";
+        newsItem.className = "articlePost";
+
+        newsItem.innerHTML = `
+            <a href="${article.url}" target="_blank">
+                <img src="${article.image}" alt="thumbnail" class="article-img">
+                <strong>${article.headline}</strong><br>
+                <p>${article.summary || "No summary available."} </p>
+                <small>${new Date(article.datetime * 1000).toLocaleString()}</small>
+            </a>
+        `;
+
+        newsContainer.appendChild(newsItem);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     getTopMovers();
+    getNews();
 });
 
 function clearInput() {
