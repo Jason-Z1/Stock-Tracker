@@ -1,6 +1,21 @@
 const API_KEY = "d0tti2pr01qlvahea590d0tti2pr01qlvahea59g";
 const topTickers = ["AAPL", "TSLA", "NVDA", "MSFT", "AMZN"];
 
+const mockCandleData = {
+    t: [
+        1718496000, // June 16, 2024
+        1718582400, // June 17, 2024
+        1718668800, // June 18, 2024
+        1718755200, // June 19, 2024
+        1718841600  // June 20, 2024
+    ],
+    o: [150, 152, 155, 157, 156], // open prices
+    h: [155, 157, 158, 160, 159], // high prices
+    l: [149, 150, 153, 155, 154], // low prices
+    c: [153, 156, 157, 158, 157], // close prices
+    s: "ok"
+};
+
 async function getTopMovers() {
     const moversContainer = document.getElementById("movers-container");
 
