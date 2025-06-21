@@ -25,13 +25,8 @@ async function getTopMovers() {
 
         const now = Math.floor(Date.now() / 1000);
         const fiveDaysAgo = now - 60 * 60 * 24 * 31; // 14 days timestamp
-        //const candleRes = await fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${fiveDaysAgo}&to=${now}&token=${API_KEY}`);
 
         const cardData = await cardRes.json();
-        //const candleData = await candleRes.json();
-
-        //Logging data (debug)
-        //console.log("Candle API response:", candleData);
 
         //Creates the card variable
         const card = document.createElement("div");
@@ -42,7 +37,15 @@ async function getTopMovers() {
         `;
 
         card.addEventListener('click', async () => {
-            const formatted = mockCandleData.t.map((timestamp, i) => ({
+            renderCandleChart(symbol, mockCandleData);
+        });
+        moversContainer.appendChild(card);
+    }
+
+}
+
+function renderCandleChart(symbol, candleData) {
+    const formatted = candleData.t.map((timestamp, i) => ({
                 x: new Date(timestamp * 1000),
                 y: [mockCandleData.o[i], mockCandleData.h[i], mockCandleData.l[i], mockCandleData.c[i]]
             }));
@@ -50,7 +53,7 @@ async function getTopMovers() {
             console.log("Formatted data:", formatted);
 
             if (window.currentChart) {
-                await window.currentChart.destroy();
+                window.currentChart.destroy();
             }
 
             const options = {
@@ -77,14 +80,6 @@ async function getTopMovers() {
 
             window.currentChart = new ApexCharts(document.querySelector("#candlestickChart"), options);
             window.currentChart.render();
-        });
-        moversContainer.appendChild(card);
-    }
-
-}
-
-function renderCandleChart(symbol, candleData) {
-    const formatted = candleData.t.map
 }
 
 async function getNews() {
@@ -111,6 +106,7 @@ async function getNews() {
 
 document.addEventListener("DOMContentLoaded", function () {
     getTopMovers();
+    renderCandleChart(topTickers[0], mockCandleData);
     getNews();
 });
 
