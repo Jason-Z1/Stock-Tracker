@@ -124,6 +124,14 @@ button[type="submit"] {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+
+#candlestickChart{
+    height: 400px;
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+}
+
 #general-news {
     display: flex;
     flex-wrap: wrap;
