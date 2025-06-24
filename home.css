@@ -39,6 +39,7 @@ body {
 
 /* Search bar container */
 #searchBar {
+    position: relative;
     width: 80%;
     border: 1px solid #ccc;
     border-radius: 25px;
@@ -47,7 +48,7 @@ body {
     justify-content: center;
     display: flex;
     top: 20px;
-    position:absolute;
+    margin: 0 auto;
 }
 
 /* Input field styles */
@@ -59,6 +60,37 @@ body {
     outline: none;
     border: none;
     font-size: 16px;
+}
+
+#suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0 0 8px 8px;
+    z-index: 20;
+    box-sizing: border-box;
+}
+
+
+#suggestions li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+#suggestions li:hover, #suggestions .active {
+    background: #3498db;
+    color: #fff;
+}
+
+.hidden { 
+    display: none; 
 }
 
 /* Button styles */

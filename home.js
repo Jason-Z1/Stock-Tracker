@@ -16,6 +16,164 @@ const mockCandleData = {
     s: "ok"
 };
 
+document.addEventListener("DOMContentLoaded", () => {
+    getTopMovers();
+    renderCandleChart(topTickers[0], mockCandleData);
+    getNews();
+});
+
+
+//Search Bar
+const searchInput = document.getElementById('searchInput');
+const suggestions = document.getElementById('suggestions');
+
+
+function debounce(fn, delay = 300){
+    let timer;
+    return(...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this,args), delay);
+    };
+}
+
+async function fetchSymbolSuggestions(query) {
+    const url = `https://finnhub.io/api/v1/search?q=${encodeURIComponent(query)}&token=${API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.result.slice(0, 10);
+}
+
+function renderSuggestions(list) {
+    if(!list.length){
+        suggestions.classList.add('hidden');
+        return;
+    }
+    
+    suggestions.innerHTML = list.map((item, idx) => 
+        `<li data-symbol="${item.symbol}" ${idx === 0 ? 'class="active"' : ''}>
+    <strong>${item.symbol}</strong> - ${item.description}
+    </li>`).join('');
+    suggestions.classList.remove('hidden');
+}
+
+const handleInput = debounce(async e => {
+    const q = e.target.value.trim();
+    if(q.length < 1) {
+        suggestions.classList.add('hidden');
+        return;
+    }
+    
+    try {
+        const matches = await fetchSymbolSuggestions(q);
+        renderSuggestions(matches);
+    } catch (err) {
+        console.error(err);
+    }
+}, 300);
+
+searchInput.addEventListener('input', handleInput);
+
+//Mouse Click w/ search bar
+suggestions.addEventListener('click', e => {
+    const li = e.target.closest('li[data-symbol]');
+    if(!li) {
+        return;
+    }
+    selectSymbol(li.dataset.symbol);
+});
+
+//Keyboard functions on search bar
+searchInput.addEventListener('keydown', e => {
+    const rows = [...suggestions.querySelectorAll('li')];
+    if (!rows.length) return;
+
+    let idx = rows.findIndex(r => r.classList.contains('active'));
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        rows.forEach(r => r.classList.remove('active'));
+        idx = (idx + 1) % rows.length;
+        rows[idx].classList.add('active');
+        return;
+    }
+
+    if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        rows.forEach(r => r.classList.remove('active'));
+        idx = (idx - 1 + rows.length) % rows.length;
+        rows[idx].classList.add('active');
+        return;
+    }
+
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        // Fallback to first item if none are active
+        if (idx === -1) idx = 0;
+
+        if (rows[idx]) {
+            const symbol = rows[idx].dataset.symbol;
+            if (symbol) {
+                selectSymbol(symbol);
+            }
+        }
+    }
+});
+
+async function selectSymbol(symbol) {
+    searchInput.value = symbol;
+    suggestions.classList.add('hidden');
+
+    // Update chart with mock data
+    renderCandleChart(symbol, mockCandleData);
+
+    // Show this symbol in the top card section
+    const moversContainer = document.getElementById("movers-container");
+    moversContainer.innerHTML = ''; // clear existing cards
+
+    const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`);
+    const cardData = await res.json();
+
+    const card = document.createElement("div");
+    card.innerHTML = `
+        <h3>${symbol}</h3>
+        <p>Price: $${cardData.c}</p>
+        <p>Change: ${cardData.dp.toFixed(2)}%</p>
+    `;
+    moversContainer.appendChild(card);
+
+    // Load news for the selected stock
+    loadNewsForSymbol(symbol);
+}
+
+async function loadNewsForSymbol(symbol) {
+    const newsContainer = document.getElementById("general-news");
+    newsContainer.innerHTML = ''; // Clear current articles
+
+    const res = await fetch(`https://finnhub.io/api/v1/company-news?symbol=${symbol}&from=2024-06-01&to=2024-06-30&token=${API_KEY}`);
+    const data = await res.json();
+
+    if (!data.length) {
+        newsContainer.innerHTML = `<p>No news found for ${symbol}</p>`;
+        return;
+    }
+
+    data.slice(0, 15).forEach(article => {
+        const newsItem = document.createElement("div");
+        newsItem.className = "articlePost";
+        newsItem.innerHTML = `
+            <a href="${article.url}" target="_blank">
+                <img src="${article.image}" alt="thumbnail" class="article-img">
+                <strong>${article.headline}</strong><br>
+                <p>${article.summary || "No summary available."}</p>
+                <small>${new Date(article.datetime * 1000).toLocaleString()}</small>
+            </a>
+        `;
+        newsContainer.appendChild(newsItem);
+    });
+}
+
+
+//Main page default 5 cards
 async function getTopMovers() {
     const moversContainer = document.getElementById("movers-container");
 
@@ -43,7 +201,7 @@ async function getTopMovers() {
     }
 
 }
-
+//Renders the given chart when called
 function renderCandleChart(symbol, candleData) {
     const formatted = candleData.t.map((timestamp, i) => ({
                 x: new Date(timestamp * 1000),
@@ -82,6 +240,7 @@ function renderCandleChart(symbol, candleData) {
             window.currentChart.render();
 }
 
+//Renders the news on the main page after loading the DOM
 async function getNews() {
     const newsContainer = document.getElementById("general-news");
     const res = await fetch(`https://finnhub.io/api/v1/news?category=general&token=${API_KEY}`);
@@ -103,12 +262,6 @@ async function getNews() {
         newsContainer.appendChild(newsItem);
     });
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-    getTopMovers();
-    renderCandleChart(topTickers[0], mockCandleData);
-    getNews();
-});
 
 function clearInput() {
     document.getElementById('searchInput').value = '';
