@@ -1,51 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="home.css">
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="home.js" defer></script>
     <title>Stocker</title>
 </head>
-
 <body>
-    <button id="menuButton">
-        <img src="./resources/images/three_hamburgers.png" alt="Menu" style="width:30px; height:30px;">
-    </button>
-    <!--Search Bar-->
-    <form id="searchBar" onsubmit="event.preventDefault();">
-        <input id="searchInput" type="text" name="query" placeholder="Search stocks..." autocomplete="off"
-            autocorrect="off" autocapitalize="off" spellcheck="false" required>
-
-        <ul id="suggestions" class="hidden"></ul>
-
-        <button type="button" onclick="clearInput()">
-            <img src="./resources/images/X.png" style="width:10px; height:10px;">
-        </button>
-        <button type="submit">
-            <img src="./resources/images/search_icon.png" alt="Search" style="width:10px; height:10px;">
-        </button>
-    </form>
-
-    <div id="main-content">
-        <section id="movers-section">
-            <h1>Companies</h1>
-            <div id="movers-container"></div>
-        </section>
-        <section id="chart-section">
-            <h2>Chart</h2>
-            <div id="candlestickChart"></div>
-            <footer style="font-size: 9px;"><strong>NOTE: The data that is presented in these tables do not reflect
-                    real-time price changes, they are mock (fake) information.</strong></footer>
-        </section>
-        <section id="news-section">
-            <h2>Market News</h2>
-            <div id="general-news"></div>
-        </section>
-    </div>
-    <!--<canvas id="candlestickChart" width="600" height="400"></canvas>-->
+    
 </body>
-
 </html>
